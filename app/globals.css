@@ -1,26 +1,246 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ==========================================================================
+   AMB CREATIVES — design tokens
+   Three colours only: ink (#000), paper (#fff), flare (#FAAB36).
+   ========================================================================== */
+
+@theme {
+  --color-ink: #000000;
+  --color-paper: #ffffff;
+  --color-flare: #faab36;
+
+  --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-editorial: var(--font-instrument), ui-serif, Georgia, serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  /* Fluid editorial scale.
+     Sized so the longest word at each step still clears the gutters at every
+     viewport — display type that outruns its container is what makes a page
+     feel broken rather than bold. Slopes are gentle (≤4.4vw) so nothing
+     doubles in size between a laptop and a desktop. */
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 1.1;
+  --text-micro: clamp(0.6875rem, 0.66rem + 0.14vw, 0.8125rem);
+  --text-micro--line-height: 1.2;
+  --text-lede: clamp(1rem, 0.95rem + 0.3vw, 1.1875rem);
+  --text-lede--line-height: 1.6;
+  --text-big: clamp(1.25rem, 1.1rem + 0.75vw, 1.75rem);
+  --text-big--line-height: 1.28;
+  --text-huge: clamp(1.6rem, 1.22rem + 1.7vw, 3rem);
+  --text-huge--line-height: 1.1;
+  --text-jumbo: clamp(1.9rem, 1.3rem + 2.7vw, 4rem);
+  --text-jumbo--line-height: 1;
+  /* Hero-only step, the largest multi-line size on the site. */
+  --text-hero: clamp(2rem, 1.15rem + 3.5vw, 4.75rem);
+  --text-hero--line-height: 0.95;
+  /* Single-line showpieces only (the price). */
+  --text-mega: clamp(2.4rem, 1.5rem + 4.4vw, 6rem);
+  --text-mega--line-height: 0.92;
+
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-swift: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-back: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  --animate-spin-slow: spin-slow 22s linear infinite;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Declared explicitly rather than reusing Tailwind's `spin`, which is only
+   emitted when the built-in `animate-spin` utility is actually used. */
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes grain-shift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  10% {
+    transform: translate3d(-4%, -3%, 0);
+  }
+  30% {
+    transform: translate3d(3%, -5%, 0);
+  }
+  50% {
+    transform: translate3d(-2%, 4%, 0);
+  }
+  70% {
+    transform: translate3d(5%, 2%, 0);
+  }
+  90% {
+    transform: translate3d(-3%, 3%, 0);
+  }
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  html {
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv01";
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background-color: var(--color-flare);
+    color: var(--color-ink);
+  }
+
+  /* The pointer is replaced by <Cursor /> on precise-pointer devices only. */
+  @media (hover: hover) and (pointer: fine) {
+    body[data-cursor="custom"],
+    body[data-cursor="custom"] * {
+      cursor: none;
+    }
+  }
+
+  /* Focus ring colour is a variable so inverted surfaces can flip it —
+     an orange ring is invisible on the orange section. */
+  :root {
+    --focus-ring: var(--color-flare);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 9px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-ink);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--color-paper) 18%, transparent);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-flare);
+  }
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+/* Outlined display type — the counterweight to the solid headline masses.
+   Uses text-fill-color rather than `color` so `currentColor` stays the real
+   colour: the stroke then inherits whatever text-* utility is applied. */
+@utility text-outline {
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1px currentColor;
+}
+
+@utility text-outline-thick {
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: clamp(1px, 0.16vw, 2.5px) currentColor;
+}
+
+/* Opt a descendant back into solid fill inside an outlined run. */
+@utility text-solid {
+  -webkit-text-fill-color: currentColor;
+  -webkit-text-stroke-width: 0;
+}
+
+/* Display headlines are set tight and optically aligned.
+   `overflow-wrap` is the backstop: a long unbroken word can never punch out
+   of its column, however narrow the viewport gets. */
+@utility display-tight {
+  font-family: var(--font-display);
+  /* 700 rather than 800: Syne's heaviest weight is very wide, which is what
+     made the old headlines read as oversized even at moderate sizes. */
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  overflow-wrap: break-word;
+}
+
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* Page gutter — asymmetric on wide screens so compositions can break out. */
+@utility gutter {
+  padding-inline: clamp(1.25rem, 5vw, 6rem);
+}
+
+/* Applied to any orange-on-black inversion. Inherits down the subtree, so
+   every focusable child inside it gets a ring you can actually see. */
+@utility invert-surface {
+  --focus-ring: var(--color-ink);
+}
+
+/* Used by SplitText: each row clips its own glyphs during the reveal.
+   Display is left to the caller so `inline-block` / `block` both compose.
+   The padding/margin pair gives descenders room without shifting layout. */
+@utility line-mask {
+  overflow: hidden;
+  padding-block: 0.08em;
+  margin-block: -0.08em;
+}
+
+/* ==========================================================================
+   Texture — a fixed film-grain plate over the whole document.
+   ========================================================================== */
+
+.grain-plate {
+  position: fixed;
+  /* Just enough overscan to cover the 5% jitter below — a larger inset makes
+     this composited layer many times the viewport for no visible gain. */
+  inset: -15%;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.22;
+  mix-blend-mode: overlay;
+  will-change: transform;
+  animation: grain-shift 3.2s steps(4) infinite;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.vignette-plate {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 90% at 50% 45%,
+    transparent 40%,
+    rgb(0 0 0 / 0.55) 100%
+  );
+}
+
+/* ==========================================================================
+   Motion preferences — every scripted animation also checks this in JS,
+   this is the belt-and-braces stylesheet half.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .grain-plate {
+    animation: none;
+  }
 }
