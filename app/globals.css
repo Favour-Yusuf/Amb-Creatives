@@ -10,6 +10,17 @@
   --color-paper: #ffffff;
   --color-flare: #faab36;
 
+  /* Moss — the supporting actor.
+     It reads 1.57:1 against ink, which makes it useless for text and ideal for
+     large graphic form: shapes, textures and washes that add depth without
+     competing with the headline. Against flare it lands at 6.99:1, so it also
+     serves as the *ink* of every orange surface — warmer and far more
+     art-directed than pure black. Floor for small text on orange is moss/80.
+     `moss-lift` is moss warmed 22% toward flare: same family, 2.5:1 on ink,
+     which is exactly right for hairlines and hover states. */
+  --color-moss: #2b3210;
+  --color-moss-lift: #594d18;
+
   --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-editorial: var(--font-instrument), ui-serif, Georgia, serif;
@@ -95,7 +106,7 @@
 
   ::selection {
     background-color: var(--color-flare);
-    color: var(--color-ink);
+    color: var(--color-moss);
   }
 
   /* The pointer is replaced by <Cursor /> on precise-pointer devices only. */
@@ -122,10 +133,10 @@
     width: 9px;
   }
   ::-webkit-scrollbar-track {
-    background: var(--color-ink);
+    background: var(--color-moss);
   }
   ::-webkit-scrollbar-thumb {
-    background: color-mix(in oklab, var(--color-paper) 18%, transparent);
+    background: var(--color-moss-lift);
   }
   ::-webkit-scrollbar-thumb:hover {
     background: var(--color-flare);
@@ -180,10 +191,57 @@
   padding-inline: clamp(1.25rem, 5vw, 6rem);
 }
 
-/* Applied to any orange-on-black inversion. Inherits down the subtree, so
-   every focusable child inside it gets a ring you can actually see. */
+/* Applied to any orange surface. Inherits down the subtree, so every focusable
+   child inside it gets a ring you can actually see. */
 @utility invert-surface {
-  --focus-ring: var(--color-ink);
+  --focus-ring: var(--color-moss);
+}
+
+/* ==========================================================================
+   Moss textures.
+   All three paint in moss by default and take `--texture-color` to override —
+   e.g. `[--texture-color:var(--color-moss-lift)]` on a moss-backed section.
+   Pair with a fade utility so a field never ends on a hard edge.
+   ========================================================================== */
+
+@utility texture-dots {
+  --texture-color: var(--color-moss);
+  --texture-size: 22px;
+  background-image: radial-gradient(
+    var(--texture-color) 1.5px,
+    transparent 1.6px
+  );
+  background-size: var(--texture-size) var(--texture-size);
+}
+
+@utility texture-grid {
+  --texture-color: var(--color-moss);
+  --texture-size: 68px;
+  background-image:
+    linear-gradient(var(--texture-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--texture-color) 1px, transparent 1px);
+  background-size: var(--texture-size) var(--texture-size);
+}
+
+@utility texture-stripes {
+  --texture-color: var(--color-moss);
+  background-image: repeating-linear-gradient(
+    128deg,
+    var(--texture-color) 0 2px,
+    transparent 2px 16px
+  );
+}
+
+@utility fade-b {
+  mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%);
+}
+
+@utility fade-t {
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 55%, #000 100%);
+}
+
+@utility fade-radial {
+  mask-image: radial-gradient(70% 60% at 50% 50%, #000 30%, transparent 100%);
 }
 
 /* Used by SplitText: each row clips its own glyphs during the reveal.
@@ -213,15 +271,18 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* Moss-tinted rather than neutral black: warms every edge of the page and is
+   the quietest place the accent does global work. */
 .vignette-plate {
   position: fixed;
   inset: 0;
   z-index: 99;
   pointer-events: none;
   background: radial-gradient(
-    120% 90% at 50% 45%,
-    transparent 40%,
-    rgb(0 0 0 / 0.55) 100%
+    125% 95% at 50% 42%,
+    transparent 38%,
+    color-mix(in oklab, var(--color-moss) 70%, transparent) 78%,
+    color-mix(in oklab, var(--color-moss) 92%, black) 100%
   );
 }
 

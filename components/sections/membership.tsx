@@ -11,6 +11,10 @@ import { MEMBERSHIP, SITE } from "@/lib/content";
 export function Membership() {
   return (
     <section id="membership" className="relative gutter py-24 sm:py-32">
+      <span
+        aria-hidden
+        className="texture-dots fade-radial pointer-events-none absolute inset-y-0 left-0 -z-10 w-2/3"
+      />
       <SectionLabel index="06">Membership Includes</SectionLabel>
 
       <div className="mt-12 grid gap-16 lg:grid-cols-12 lg:gap-12">
@@ -31,7 +35,7 @@ export function Membership() {
 
           <ul className="mt-12">
             {MEMBERSHIP.map((item, i) => (
-              <li key={item} className="border-t border-paper/12">
+              <li key={item} className="border-t border-moss-lift">
                 <Reveal delay={Math.min(i, 8) * 0.04} from="left" distance={24}>
                   <div className="group flex items-start gap-5 py-4">
                     <span
@@ -89,7 +93,7 @@ function MembershipPass() {
     <div ref={ref} style={{ perspective: 1200 }} onPointerMove={track} onPointerLeave={reset}>
       <motion.div
         style={reduced ? undefined : { rotateX, rotateY, transformStyle: "preserve-3d" }}
-        className="relative aspect-7/11 w-full overflow-hidden rounded-2xl border border-flare/50 bg-ink p-7 sm:p-8"
+        className="relative aspect-7/11 w-full overflow-hidden rounded-2xl border border-flare/50 bg-moss p-7 sm:p-8"
       >
         <motion.span
           aria-hidden
@@ -100,7 +104,7 @@ function MembershipPass() {
         <div className="relative flex h-full flex-col justify-between">
           <div className="flex items-start justify-between gap-4">
             <span className="label-mono text-flare">AMB / Creatives</span>
-            <span className="label-mono text-right text-paper/40">
+            <span className="label-mono text-right text-paper/50">
               Member
               <br />
               Pass
@@ -108,12 +112,12 @@ function MembershipPass() {
           </div>
 
           <div>
-            <p className="label-mono text-paper/40">Access level</p>
+            <p className="label-mono text-paper/55">Access level</p>
             <p className="display-tight mt-1 text-[clamp(1.75rem,3.4vw,2.5rem)] leading-none text-paper">
               Life
               <span className="text-flare">time</span>
             </p>
-            <p className="mt-5 font-mono text-2xs uppercase tracking-[0.16em] text-paper/45">
+            <p className="mt-5 font-mono text-2xs uppercase tracking-[0.16em] text-paper/55">
               One-time investment · {SITE.priceLabel}
             </p>
           </div>
@@ -121,13 +125,13 @@ function MembershipPass() {
           {/* Perforation */}
           <div aria-hidden className="flex items-center gap-1.5 py-1">
             {Array.from({ length: 26 }).map((_, i) => (
-              <span key={i} className="h-px flex-1 bg-paper/25" />
+              <span key={i} className="h-px flex-1 bg-moss-lift" />
             ))}
           </div>
 
           <div className="flex items-end justify-between gap-4">
             <div>
-              <p className="label-mono text-paper/40">Member</p>
+              <p className="label-mono text-paper/55">Member</p>
               <p className="mt-1 font-mono text-sm text-paper/70">— — — — — —</p>
             </div>
             {/* Barcode */}

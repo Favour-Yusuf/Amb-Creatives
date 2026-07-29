@@ -100,14 +100,14 @@ export default async function JoinSuccessPage({
 
         {outcome.state === "confirmed" ? (
           <>
-            <dl className="mt-11 grid max-w-2xl gap-px overflow-hidden rounded-xl bg-paper/15 sm:grid-cols-3">
+            <dl className="mt-11 grid max-w-2xl gap-px overflow-hidden rounded-xl bg-moss-lift sm:grid-cols-3">
               {[
                 { label: "Paid", value: outcome.amount },
                 { label: "Receipt to", value: outcome.email },
                 { label: "Reference", value: outcome.reference },
               ].map((row) => (
-                <div key={row.label} className="bg-ink p-5">
-                  <dt className="label-mono text-paper/40">{row.label}</dt>
+                <div key={row.label} className="bg-moss p-5">
+                  <dt className="label-mono text-paper/55">{row.label}</dt>
                   <dd className="mt-2 truncate font-mono text-sm text-paper">
                     {row.value}
                   </dd>
@@ -120,7 +120,7 @@ export default async function JoinSuccessPage({
         ) : (
           <>
             {outcome.state === "unpaid" ? (
-              <p className="mt-5 label-mono text-paper/45">{outcome.detail}</p>
+              <p className="mt-5 label-mono text-paper/55">{outcome.detail}</p>
             ) : null}
 
             {outcome.state === "error" ? (
@@ -131,7 +131,7 @@ export default async function JoinSuccessPage({
               <Link
                 href="/"
                 data-cursor-hover
-                className="group relative inline-flex overflow-hidden rounded-full bg-flare px-8 py-4 text-ink"
+                className="group relative inline-flex overflow-hidden rounded-full bg-flare px-8 py-4 text-moss"
               >
                 <span
                   aria-hidden
@@ -139,7 +139,7 @@ export default async function JoinSuccessPage({
                 />
                 <span className="relative display-tight">Back to the site</span>
               </Link>
-              <span className="label-mono text-paper/40">
+              <span className="label-mono text-paper/55">
                 {SITE.name} · Lifetime Membership
               </span>
             </div>

@@ -56,6 +56,16 @@ export function Hero() {
       onPointerMove={trackPointer}
       className="relative flex min-h-dvh flex-col justify-between overflow-hidden pt-28 sm:pt-32"
     >
+      {/* Three stacked grounds: a static moss wash for depth, a moss grid for
+          structure, then the orange spotlight that follows the pointer. */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-30 bg-[radial-gradient(75%_60%_at_15%_10%,var(--color-moss)_0%,transparent_65%)]"
+      />
+      <span
+        aria-hidden
+        className="texture-grid fade-b pointer-events-none absolute inset-0 -z-20 opacity-80"
+      />
       <motion.div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
@@ -65,7 +75,7 @@ export function Hero() {
       {/* Eyebrow — one line, one job. */}
       <div className="gutter">
         <motion.div
-          className="flex items-center gap-3 border-b border-paper/10 pb-5"
+          className="flex items-center gap-3 border-b border-moss-lift pb-5"
           initial={reduced ? undefined : { opacity: 0, y: 12 }}
           animate={reduced ? undefined : { opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: INTRO - 0.1, ease: [0.16, 1, 0.3, 1] }}
@@ -104,14 +114,14 @@ export function Hero() {
       {/* Foot: what it is on the left, what it costs and how to get it on the right. */}
       <div className="gutter">
         <motion.div
-          className="grid gap-10 border-t border-paper/10 py-9 lg:grid-cols-12 lg:gap-8"
+          className="grid gap-10 border-t border-moss-lift py-9 lg:grid-cols-12 lg:gap-8"
           initial={reduced ? undefined : { opacity: 0, y: 20 }}
           animate={reduced ? undefined : { opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: INTRO + 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className="lg:col-span-6">
             <p className="max-w-xl text-lede text-paper/75">{HERO.body}</p>
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-paper/45">
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-paper/55">
               {HERO.support}
             </p>
           </div>
@@ -130,13 +140,13 @@ export function Hero() {
               className="w-full sm:w-auto"
             />
 
-            <span className="label-mono text-paper/35">Scroll to explore ↓</span>
+            <span className="label-mono text-paper/55">Scroll to explore ↓</span>
           </div>
         </motion.div>
       </div>
 
       {/* Ribbon */}
-      <div className="border-y border-paper/10 bg-flare py-3 text-ink">
+      <div className="border-y border-moss-lift bg-flare py-3 text-moss">
         <Marquee speed={-2} repeat={3}>
           {HERO.ribbon.map((item, i) => (
             <span key={i} className="label-mono flex items-center whitespace-nowrap">

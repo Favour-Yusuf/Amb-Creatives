@@ -36,6 +36,7 @@ export function Why() {
       aria-label={WHY.label}
     >
       <div className="sticky top-0 flex h-dvh flex-col overflow-hidden">
+        <span aria-hidden className="texture-grid fade-b pointer-events-none absolute inset-0 opacity-70" />
         <div className="gutter pt-24 sm:pt-28">
           <SectionLabel index="02">{WHY.label}</SectionLabel>
         </div>
@@ -54,11 +55,13 @@ export function Why() {
               >
                 <div
                   className={cn(
-                    "relative w-full",
-                    // The answer arrives as an object, not a background change.
-                    // Right clearance keeps the chapter rail off the orange.
-                    isResolution &&
-                      "invert-surface rounded-3xl bg-flare p-8 text-ink sm:p-14 lg:mr-32",
+                    "relative w-full rounded-3xl p-8 sm:p-14 lg:mr-32",
+                    // Every pressure lands on a moss card; the answer arrives
+                    // as the same object in flare. Same shape, inverted tone —
+                    // so the payoff reads as a resolution, not a new section.
+                    isResolution
+                      ? "invert-surface bg-flare text-moss"
+                      : "border border-moss-lift bg-moss/50",
                   )}
                 >
                   <p className="label-mono mb-7 flex items-center gap-3">
@@ -66,7 +69,7 @@ export function Why() {
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <span aria-hidden className="h-px w-8 bg-current opacity-30" />
-                    <span className="opacity-50">
+                    <span className={isResolution ? "text-moss/80" : "opacity-50"}>
                       {isResolution ? "The answer" : `Pressure ${i + 1} / ${COUNT - 1}`}
                     </span>
                   </p>
@@ -83,7 +86,7 @@ export function Why() {
                   </p>
 
                   {isResolution ? (
-                    <p className="label-mono mt-10 max-w-md opacity-60">
+                    <p className="label-mono mt-10 max-w-md text-moss/80">
                       Knowledge · Community · Resources · Accountability
                     </p>
                   ) : null}
@@ -95,7 +98,7 @@ export function Why() {
 
         {/* Horizontal progress under the pinned viewport. */}
         <div className="gutter pb-8">
-          <div className="h-px w-full bg-paper/15">
+          <div className="h-px w-full bg-moss-lift">
             <motion.div
               className="h-full w-full origin-left bg-flare"
               style={{ scaleX: railScale }}

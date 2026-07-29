@@ -37,6 +37,14 @@ export function FinalCta() {
       onPointerMove={track}
       className="relative flex min-h-dvh flex-col justify-center overflow-hidden py-24 sm:py-32"
     >
+      <span
+        aria-hidden
+        className="texture-stripes fade-radial pointer-events-none absolute inset-0 opacity-90"
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_55%_at_80%_20%,var(--color-moss)_0%,transparent_70%)]"
+      />
       <motion.span
         aria-hidden
         className="pointer-events-none absolute inset-0"
@@ -90,7 +98,7 @@ export function FinalCta() {
               />
             </Reveal>
 
-            <p className="label-mono text-paper/45">{FINAL.terms}</p>
+            <p className="label-mono text-paper/55">{FINAL.terms}</p>
           </div>
         </div>
       </div>

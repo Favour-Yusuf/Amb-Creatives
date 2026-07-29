@@ -76,7 +76,7 @@ export function Preloader() {
             {Array.from({ length: PANELS }).map((_, i) => (
               <motion.div
                 key={i}
-                className="h-full flex-1 bg-ink"
+                className={i % 2 === 0 ? "h-full flex-1 bg-ink" : "h-full flex-1 bg-moss"}
                 exit={{ y: "-100%" }}
                 transition={{
                   duration: 0.75,

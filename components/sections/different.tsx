@@ -12,13 +12,31 @@ export function Different() {
   const reduced = useReducedMotion();
 
   return (
-    <section id="different" className="relative overflow-hidden py-24 sm:py-32">
-      <div className="gutter">
+    <section
+      id="different"
+      className="relative overflow-hidden bg-moss py-24 sm:py-32"
+    >
+      {/* Seams: the moss plate rises out of ink and sinks back into it, so the
+          tonal shift reads as a surface rather than a colour swap. */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-linear-to-b from-ink to-transparent"
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-ink to-transparent"
+      />
+      <span
+        aria-hidden
+        className="texture-grid fade-radial pointer-events-none absolute inset-0 opacity-70 [--texture-color:var(--color-moss-lift)]"
+      />
+
+      <div className="gutter relative">
         <SectionLabel index="04">{DIFFERENT.label}</SectionLabel>
 
         {/* The negative — struck through as it enters. */}
         <div className="relative mt-14 max-w-5xl">
-          <h2 className="display-tight text-huge text-paper/35">
+          <h2 className="display-tight text-huge text-paper/50">
             {DIFFERENT.negative}
           </h2>
           <motion.span
@@ -36,31 +54,32 @@ export function Different() {
         </Reveal>
       </div>
 
-      {/* Rotated band cutting across the composition. */}
+      {/* Rotated band cutting across the composition — flare on moss, the
+          section's one loud moment. */}
       <div
         aria-hidden
-        className="pointer-events-none my-16 -mx-[6vw] w-[112vw] -rotate-[2.5deg] border-y border-paper/15 py-4"
+        className="pointer-events-none relative my-16 -mx-[6vw] w-[112vw] -rotate-[2.5deg] border-y border-moss-lift bg-flare py-4"
       >
         <Marquee speed={1.6} repeat={2}>
           {DIFFERENT.pillars.map((pillar, i) => (
             <span
               key={i}
-              className="display-tight text-outline flex items-center whitespace-nowrap text-[clamp(1.15rem,2.6vw,2.25rem)] text-paper/70"
+              className="display-tight flex items-center whitespace-nowrap text-[clamp(1.15rem,2.6vw,2.25rem)] text-moss"
             >
               <span className="px-6">{pillar}</span>
-              <span className="text-solid text-flare">✦</span>
+              <span className="text-moss/50">✦</span>
             </span>
           ))}
         </Marquee>
       </div>
 
       {/* The six pillars, offset for rhythm. */}
-      <ol className="gutter">
+      <ol className="gutter relative">
         {DIFFERENT.pillars.map((pillar, i) => (
           <li
             key={pillar}
             className={cn(
-              "group border-t border-paper/15 py-6 sm:py-8",
+              "group border-t border-moss-lift py-6 sm:py-8",
               // Alternating indent breaks the left rag on purpose.
               i % 2 === 1 && "lg:pl-[18%]",
             )}
@@ -83,7 +102,7 @@ export function Different() {
         ))}
       </ol>
 
-      <div className="gutter mt-16">
+      <div className="gutter relative mt-16">
         <Reveal>
           <p className="max-w-3xl border-l-2 border-flare pl-6 font-editorial text-[clamp(1.1rem,1.7vw,1.6rem)] italic leading-snug text-paper/85 sm:pl-10">
             {DIFFERENT.close}

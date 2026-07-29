@@ -66,13 +66,13 @@ export function Cursor() {
       <motion.div
         className="absolute left-0 top-0 grid place-items-center rounded-full border border-paper/50"
         style={{ x: ringX, y: ringY, translateX: "-50%", translateY: "-50%" }}
-        // An ink chip with an orange label reads on black *and* on the orange
+        // A moss chip with an orange label reads on black *and* on the orange
         // section — an orange chip would vanish on one of them.
         animate={{
           width: hovering ? (label ? 84 : 56) : 30,
           height: hovering ? (label ? 84 : 56) : 30,
           borderColor: hovering ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.5)",
-          backgroundColor: label ? "rgba(0,0,0,1)" : "rgba(0,0,0,0)",
+          backgroundColor: label ? "rgba(43,50,16,1)" : "rgba(43,50,16,0)",
         }}
         transition={{ type: "spring", stiffness: 320, damping: 26 }}
       >

@@ -12,11 +12,48 @@ npm run lint
 
 ## The design system
 
-Three colours, nothing else: `ink` (`#000000`), `paper` (`#FFFFFF`),
-`flare` (`#FAAB36`). They're declared as Tailwind theme tokens in
+`ink` (`#000000`), `paper` (`#FFFFFF`), `flare` (`#FAAB36`) — and `moss`
+(`#2B3210`) as the supporting accent. Declared as Tailwind theme tokens in
 [app/globals.css](app/globals.css) along with the fluid type scale
 (`text-hero` → `text-2xs`), easing curves, and the custom utilities
 (`display-tight`, `label-mono`, `text-outline`, `gutter`, `invert-surface`).
+
+### How moss is used
+
+Two contrast facts decide everything:
+
+| Pairing | Ratio | Consequence |
+| --- | --- | --- |
+| moss on ink | **1.57:1** | Unusable for text — ideal for large graphic form |
+| moss on flare | **6.99:1** | Can serve as the *ink* of every orange surface |
+
+So moss plays three distinct roles, never a fourth:
+
+1. **The ink of orange surfaces.** Every flare surface — the investment
+   section, the hero ribbon, open gain rows, the Why resolution card, the
+   checkout offer panel, primary buttons — sets its text in moss rather than
+   black. Warmer, and the single biggest shift in the page's character.
+   **Small text on flare must be `moss/80` or darker** (4.62:1); `moss/70`
+   drops to 3.71:1 and fails.
+2. **Graphic form on ink.** Because it barely separates from black, moss can
+   carry large shapes without competing with the headline: the ring in the
+   definition section, the hero's corner wash, the founder's radial, and the
+   `texture-dots` / `texture-grid` / `texture-stripes` fields. This is why the
+   page reads as layered rather than busy.
+3. **Whole plates.** The Different section and the footer are moss grounds,
+   gradient-seamed into the ink above and below. They give the scroll a
+   tonal rhythm: ink → moss → ink → flare → ink → moss.
+
+`moss-lift` (`#594D18`) is moss warmed 22% toward flare — same family, 2.5:1 on
+ink. It replaces every white-alpha hairline; borders now read warm instead of
+grey.
+
+The portrait is a genuine duotone: moss takes the shadows via `mix-blend-color`,
+flare lifts the highlights via `mix-blend-overlay`, both clearing on hover.
+
+**Textures** take `--texture-color`, so a field can be retinted on a moss
+ground: `texture-grid [--texture-color:var(--color-moss-lift)]`. Always pair
+one with `fade-b` / `fade-t` / `fade-radial` so it never ends on a hard edge.
 
 Four typefaces, all self-hosted through `next/font`:
 
@@ -28,7 +65,7 @@ Four typefaces, all self-hosted through `next/font`:
 | Mono | Geist Mono | Indices, labels, technical furniture |
 
 **Inverted surfaces.** Anything that flips to an orange background gets the
-`invert-surface` class. It rebinds `--focus-ring` to ink so focus outlines stay
+`invert-surface` class. It rebinds `--focus-ring` to moss so focus outlines stay
 visible, and it's the signal to check white-on-orange contrast in that subtree.
 
 ## Structure
@@ -37,7 +74,7 @@ visible, and it's the signal to check white-on-orange contrast in that subtree.
 app/
   layout.tsx              fonts, metadata, global chrome
   page.tsx                section order + Product JSON-LD
-  icon.tsx                generated favicon
+  icon.png / apple-icon   brand mark, cropped from the lockup
   opengraph-image.tsx     generated share card
   join/success/           verification + WhatsApp handoff
   api/flutterwave/        webhook
@@ -120,9 +157,9 @@ charges in the major unit, so ₦5,000 is sent as `5000`.
 
 - `public/amb-logo.png` — the lockup, trimmed of its transparent padding
   (3.32:1). Used in the nav, the intro card and the footer masthead.
-- `app/icon.png` / `app/apple-icon.png` — the palette-triangle mark on ink,
+- `app/icon.png` / `app/apple-icon.png` — the palette-triangle mark on moss,
   cropped out of the lockup. The wordmark is unreadable at 16px; the mark isn't.
   Regenerate them from `amb-logo.png` if the brand mark ever changes.
-- `public/founder.jpg` — the portrait, rendered inside the film frame under an
-  orange duotone that clears on hover. Swap it by replacing the file, or change
+- `public/founder.jpg` — the portrait, rendered inside the film frame under a
+  moss/flare duotone that clears on hover. Swap it by replacing the file, or change
   `PORTRAIT_SRC` in [components/sections/founder.tsx](components/sections/founder.tsx).

@@ -47,7 +47,7 @@ export function ScrollRail() {
     <aside
       className={cn(
         "pointer-events-none fixed right-0 top-1/2 z-90 hidden -translate-y-1/2 pr-5 transition-colors duration-500 lg:block xl:pr-8",
-        onFlare ? "text-ink" : "text-paper",
+        onFlare ? "text-moss" : "text-paper",
       )}
       aria-label="Section navigation"
     >
@@ -85,9 +85,9 @@ export function ScrollRail() {
           );
         })}
 
-        <div className={cn("mt-3 h-24 w-px", onFlare ? "bg-ink/20" : "bg-paper/15")}>
+        <div className={cn("mt-3 h-24 w-px", onFlare ? "bg-moss/30" : "bg-moss-lift")}>
           <motion.div
-            className={cn("h-full w-full origin-top", onFlare ? "bg-ink" : "bg-flare")}
+            className={cn("h-full w-full origin-top", onFlare ? "bg-moss" : "bg-flare")}
             style={{ scaleY: progress }}
           />
         </div>

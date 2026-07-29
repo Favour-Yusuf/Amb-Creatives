@@ -27,7 +27,7 @@ export function SiteNav() {
     <motion.header
       className={cn(
         "fixed inset-x-0 top-0 z-90 gutter transition-colors duration-500",
-        past && "bg-ink/70 backdrop-blur-xl",
+        past && "bg-moss/80 backdrop-blur-xl",
       )}
       initial={{ y: 0 }}
       animate={{ y: hidden ? "-130%" : 0 }}
@@ -38,7 +38,7 @@ export function SiteNav() {
           "flex items-center justify-between gap-6 py-5 transition-colors duration-500",
           // A translucent ink plate keeps the bar legible over every section,
           // including the full-orange investment block.
-          past ? "border-b border-paper/10" : "border-b border-transparent",
+          past ? "border-b border-moss-lift" : "border-b border-transparent",
         )}
       >
         <a
@@ -62,7 +62,7 @@ export function SiteNav() {
           onClick={() => open("nav")}
           data-cursor-hover
           data-cursor-label="Join"
-          className="group relative overflow-hidden rounded-full bg-paper px-5 py-2.5 text-ink sm:px-6"
+          className="group relative overflow-hidden rounded-full bg-paper px-5 py-2.5 text-moss sm:px-6"
         >
           <span
             aria-hidden

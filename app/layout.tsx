@@ -97,7 +97,7 @@ export default function RootLayout({
           <CheckoutProvider>
             <a
               href="#definition"
-              className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-200 focus:rounded-full focus:bg-flare focus:px-5 focus:py-3 focus:text-ink"
+              className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-200 focus:rounded-full focus:bg-flare focus:px-5 focus:py-3 focus:text-moss"
             >
               Skip to content
             </a>

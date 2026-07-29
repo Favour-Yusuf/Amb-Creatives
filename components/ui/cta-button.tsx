@@ -14,9 +14,10 @@ type CtaButtonProps = ComponentPropsWithoutRef<"button"> & {
 };
 
 const shells: Record<Variant, string> = {
-  flare: "bg-flare text-ink",
-  ink: "bg-ink text-paper",
-  outline: "bg-transparent text-paper ring-1 ring-inset ring-paper/40",
+  // Moss, not black, on the orange face — warmer and unmistakably art-directed.
+  flare: "bg-flare text-moss",
+  ink: "bg-moss text-paper ring-1 ring-inset ring-moss-lift",
+  outline: "bg-transparent text-paper ring-1 ring-inset ring-moss-lift",
 };
 
 const fills: Record<Variant, string> = {
@@ -28,9 +29,9 @@ const fills: Record<Variant, string> = {
 };
 
 const hoverInk: Record<Variant, string> = {
-  flare: "group-hover:text-ink group-focus-visible:text-ink",
-  ink: "group-hover:text-ink group-focus-visible:text-ink",
-  outline: "group-hover:text-ink group-focus-visible:text-ink",
+  flare: "group-hover:text-moss group-focus-visible:text-moss",
+  ink: "group-hover:text-moss group-focus-visible:text-moss",
+  outline: "group-hover:text-moss group-focus-visible:text-moss",
 };
 
 /**

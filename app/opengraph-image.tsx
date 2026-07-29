@@ -16,7 +16,9 @@ export default function OpengraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#000000",
+          // Ink falling into moss — the same depth the page itself carries.
+          backgroundImage:
+            "linear-gradient(135deg, #000000 0%, #000000 42%, #2B3210 100%)",
           color: "#FFFFFF",
           padding: 72,
         }}
@@ -77,7 +79,7 @@ export default function OpengraphImage() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            borderTop: "1px solid rgba(255,255,255,0.18)",
+            borderTop: "1px solid #594D18",
             paddingTop: 28,
             fontSize: 26,
           }}
@@ -89,7 +91,7 @@ export default function OpengraphImage() {
             style={{
               display: "flex",
               background: "#FAAB36",
-              color: "#000000",
+              color: "#2B3210",
               padding: "12px 28px",
               borderRadius: 999,
               fontWeight: 700,

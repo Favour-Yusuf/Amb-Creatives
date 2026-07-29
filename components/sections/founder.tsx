@@ -23,6 +23,7 @@ export function Founder() {
 
   return (
     <section ref={sectionRef} id="founder" className="relative overflow-hidden py-24 sm:py-32">
+      <span aria-hidden className="pointer-events-none absolute right-[-10vw] top-[10%] -z-10 hidden aspect-square w-[38vw] rounded-full bg-[radial-gradient(circle,var(--color-moss)_0%,transparent_70%)] lg:block" />
       <div className="gutter">
         <SectionLabel index="05">{FOUNDER.label}</SectionLabel>
 
@@ -49,7 +50,7 @@ export function Founder() {
             <ul className="mt-8 flex flex-wrap gap-2">
               {FOUNDER.roles.map((role, i) => (
                 <Reveal key={role} delay={i * 0.05} from="none">
-                  <li className="label-mono rounded-full border border-paper/20 px-4 py-2 text-paper/65">
+                  <li className="label-mono rounded-full border border-moss-lift bg-moss/40 px-4 py-2 text-paper/70 transition-colors duration-300 hover:border-flare/50 hover:text-flare">
                     {role}
                   </li>
                 </Reveal>
@@ -67,17 +68,17 @@ export function Founder() {
             </Reveal>
 
             <Reveal delay={0.2}>
-              <blockquote className="mt-10 border-t border-paper/15 pt-8">
+              <blockquote className="mt-10 border-t border-moss-lift pt-8">
                 <p className="font-editorial text-[clamp(1.15rem,1.9vw,1.75rem)] italic leading-snug text-flare">
                   “{FOUNDER.mission}”
                 </p>
-                <footer className="label-mono mt-4 text-paper/40">
+                <footer className="label-mono mt-4 text-paper/55">
                   His mission, unchanged
                 </footer>
               </blockquote>
             </Reveal>
 
-            <dl className="mt-12 grid grid-cols-3 gap-6 border-t border-paper/15 pt-8">
+            <dl className="mt-12 grid grid-cols-3 gap-6 border-t border-moss-lift pt-8">
               {FOUNDER.stats.map((stat, i) => (
                 <Reveal key={stat.label} delay={i * 0.08}>
                   <div>
@@ -85,7 +86,7 @@ export function Founder() {
                     <dd className="display-tight text-[clamp(1.6rem,2.4vw,2.25rem)] leading-none text-paper">
                       {stat.value}
                     </dd>
-                    <p className="mt-3 font-mono text-2xs uppercase leading-relaxed tracking-[0.14em] text-paper/45">
+                    <p className="mt-3 font-mono text-2xs uppercase leading-relaxed tracking-[0.14em] text-paper/55">
                       {stat.label}
                     </p>
                   </div>
@@ -97,8 +98,8 @@ export function Founder() {
       </div>
 
       {/* Client roll */}
-      <div className="mt-20 border-y border-paper/15 py-6">
-        <p className="gutter label-mono mb-5 text-paper/35">Selected partners</p>
+      <div className="relative mt-20 border-y border-moss-lift bg-moss/35 py-6">
+        <p className="gutter label-mono mb-5 text-paper/55">Selected partners</p>
         <Marquee speed={-1.6} repeat={2}>
           {FOUNDER.clients.map((client) => (
             <span
@@ -114,7 +115,7 @@ export function Founder() {
 
       {/* Disciplines */}
       <div className="gutter mt-14">
-        <p className="label-mono mb-6 text-paper/35">Disciplines</p>
+        <p className="label-mono mb-6 text-paper/55">Disciplines</p>
         <ul className="flex flex-wrap gap-x-6 gap-y-3">
           {FOUNDER.disciplines.map((discipline, i) => (
             <Reveal key={discipline} delay={i * 0.03} from="none">
@@ -129,10 +130,10 @@ export function Founder() {
   );
 }
 
-/** Film-frame plate. The portrait sits under an orange duotone that clears on hover. */
+/** Film-frame plate. The portrait sits under a moss/flare duotone that clears on hover. */
 function PortraitFrame({ src, alt }: { src: string; alt: string }) {
   return (
-    <figure className="group relative isolate aspect-4/5 w-full overflow-hidden border border-paper/20 bg-ink">
+    <figure className="group relative isolate aspect-4/5 w-full overflow-hidden border border-moss-lift bg-moss">
       {/* Sprocket holes — a nod to the cinematography half of the practice. */}
       {["left-2", "right-2"].map((side) => (
         <span
@@ -151,16 +152,22 @@ function PortraitFrame({ src, alt }: { src: string; alt: string }) {
         alt={alt}
         fill
         sizes="(min-width: 1024px) 40vw, 92vw"
-        className="scale-[1.02] object-cover grayscale transition-all duration-700 ease-expo group-hover:scale-105 group-hover:grayscale-0"
+        className="scale-[1.02] object-cover grayscale contrast-125 transition-all duration-700 ease-expo group-hover:scale-105 group-hover:grayscale-0 group-hover:contrast-100"
       />
-      {/* Orange duotone over the greyscale — lifts on hover to reveal the shot. */}
+      {/* A real duotone rather than a single tint: moss takes the shadows via
+          `color`, flare lifts the highlights via `overlay`. Both clear on
+          hover to hand the photograph back. */}
       <span
         aria-hidden
-        className="absolute inset-0 bg-flare opacity-55 mix-blend-color transition-opacity duration-700 ease-expo group-hover:opacity-0"
+        className="absolute inset-0 bg-moss opacity-85 mix-blend-color transition-opacity duration-700 ease-expo group-hover:opacity-0"
       />
       <span
         aria-hidden
-        className="absolute inset-0 bg-linear-to-t from-ink/70 via-transparent to-ink/25"
+        className="absolute inset-0 bg-flare opacity-45 mix-blend-overlay transition-opacity duration-700 ease-expo group-hover:opacity-0"
+      />
+      <span
+        aria-hidden
+        className="absolute inset-0 bg-linear-to-t from-moss via-transparent to-moss/40"
       />
 
       {/* Corner crop marks */}
@@ -177,7 +184,7 @@ function PortraitFrame({ src, alt }: { src: string; alt: string }) {
         />
       ))}
 
-      <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-linear-to-t from-ink to-transparent px-6 pb-6 pt-14">
+      <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-linear-to-t from-moss to-transparent px-6 pb-6 pt-14">
         <span className="label-mono text-paper">{FOUNDER.name}</span>
         <span className="label-mono text-flare">Founder</span>
       </figcaption>

@@ -7,6 +7,7 @@ import { useCheckout } from "@/components/checkout/checkout-provider";
 import { SITE } from "@/lib/content";
 import { buildReference, isValidEmail } from "@/lib/flutterwave";
 import { loadFlutterwave } from "@/lib/flutterwave-checkout";
+import { useMediaQuery } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 
 type FieldErrors = Partial<Record<"name" | "email", string>>;
@@ -21,6 +22,7 @@ const HIGHLIGHTS = [
 export function JoinModal() {
   const { isOpen, close } = useCheckout();
   const lenis = useLenis();
+  const finePointer = useMediaQuery("(hover: hover) and (pointer: fine)");
   const panelRef = useRef<HTMLDivElement>(null);
   const firstFieldRef = useRef<HTMLInputElement>(null);
 
@@ -33,7 +35,12 @@ export function JoinModal() {
     lenis?.stop();
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const focusTimer = window.setTimeout(() => firstFieldRef.current?.focus(), 420);
+
+    // Auto-focus only where there's a real pointer. On touch it throws up the
+    // keyboard the instant the sheet opens and buries the rest of the form.
+    const focusTimer = finePointer
+      ? window.setTimeout(() => firstFieldRef.current?.focus(), 420)
+      : undefined;
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -62,11 +69,11 @@ export function JoinModal() {
     document.addEventListener("keydown", onKeyDown);
     return () => {
       document.removeEventListener("keydown", onKeyDown);
-      window.clearTimeout(focusTimer);
+      if (focusTimer !== undefined) window.clearTimeout(focusTimer);
       document.body.style.overflow = previousOverflow;
       lenis?.start();
     };
-  }, [isOpen, close, lenis]);
+  }, [isOpen, close, lenis, finePointer]);
 
   return (
     <AnimatePresence>
@@ -84,7 +91,7 @@ export function JoinModal() {
             type="button"
             aria-label="Close checkout"
             onClick={close}
-            className="absolute inset-0 bg-ink/85 backdrop-blur-sm"
+            className="absolute inset-0 bg-moss/85 backdrop-blur-sm"
             variants={{ hidden: { opacity: 0 }, shown: { opacity: 1 } }}
             transition={{ duration: 0.35 }}
             tabIndex={-1}
@@ -92,38 +99,60 @@ export function JoinModal() {
 
           <motion.div
             ref={panelRef}
-            className="relative m-auto flex max-h-dvh w-full max-w-6xl flex-col overflow-y-auto bg-ink shadow-2xl md:max-h-[92dvh] md:flex-row md:overflow-hidden"
+            /* Lenis preventDefaults every scroll event while it is stopped,
+               which kills touch scrolling inside the dialog. This attribute is
+               its documented opt-out and must stay on the scroll container. */
+            data-lenis-prevent
+            className={cn(
+              "relative flex w-full flex-col overscroll-contain bg-ink shadow-2xl",
+              // Mobile: a full-height sheet that owns the screen and scrolls.
+              "h-dvh overflow-y-auto",
+              // Desktop: a centred, non-scrolling dialog with two columns.
+              "md:m-auto md:h-auto md:max-h-[92dvh] md:max-w-6xl md:flex-row md:overflow-hidden",
+            )}
             variants={{
               hidden: { y: 40, opacity: 0, scale: 0.985 },
               shown: { y: 0, opacity: 1, scale: 1 },
             }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
-            {/* Offer panel */}
-            <div className="invert-surface relative flex flex-col justify-between gap-10 bg-flare p-8 text-ink sm:p-10 md:w-[42%]">
+            {/* Close — pinned to the sheet on mobile so it is always reachable. */}
+            <button
+              type="button"
+              onClick={close}
+              data-cursor-hover
+              aria-label="Close checkout"
+              className="group absolute right-4 top-4 z-20 grid h-11 w-11 shrink-0 place-items-center rounded-full bg-moss/80 text-paper ring-1 ring-moss-lift backdrop-blur-sm transition-colors hover:bg-paper hover:text-moss md:right-6 md:top-6"
+            >
+              <span className="block transition-transform duration-500 ease-expo group-hover:rotate-90">
+                ✕
+              </span>
+            </button>
+
+            {/* Offer panel. Second in the mobile flow so the form is the first
+                thing in reach; first on desktop where both are visible. */}
+            <div className="invert-surface relative order-2 flex flex-col gap-7 bg-flare px-6 py-8 text-moss sm:px-8 md:order-1 md:w-[42%] md:justify-between md:gap-10 md:p-10">
               <div>
-                <p className="label-mono opacity-70">Membership</p>
+                <p className="label-mono text-moss/80">Membership</p>
                 <h2
                   id={titleId}
-                  className="mt-4 display-tight text-[clamp(1.4rem,2.4vw,2rem)]"
+                  className="mt-3 display-tight text-[clamp(1.4rem,2.4vw,2rem)]"
                 >
-                  Lifetime
-                  <br />
-                  Membership
+                  Lifetime Membership
                 </h2>
               </div>
 
               <div>
-                <p className="label-mono opacity-70">One-time investment</p>
+                <p className="label-mono text-moss/80">One-time investment</p>
                 <p className="display-tight mt-1 text-[clamp(2.25rem,4.5vw,3.5rem)] leading-none">
                   {SITE.priceLabel}
                 </p>
-                <p className="mt-3 font-mono text-micro uppercase tracking-[0.14em] opacity-70">
+                <p className="mt-3 font-mono text-micro uppercase tracking-[0.14em] text-moss/80">
                   No subscriptions · No recurring charges
                 </p>
               </div>
 
-              <ul className="flex flex-col gap-3 border-t border-ink/25 pt-6">
+              <ul className="flex flex-col gap-3 border-t border-moss/30 pt-6">
                 {HIGHLIGHTS.map((item) => (
                   <li key={item} className="flex items-start gap-3 text-sm leading-snug">
                     <span aria-hidden className="mt-0.5 font-mono text-xs">
@@ -136,26 +165,15 @@ export function JoinModal() {
             </div>
 
             {/* Form panel */}
-            <div className="flex flex-1 flex-col justify-center gap-8 p-8 sm:p-10 md:p-12">
-              <div className="flex items-start justify-between gap-6">
-                <div>
-                  <p className="label-mono text-flare">Secure checkout</p>
-                  <p className="mt-3 max-w-sm text-lede text-paper/70">
-                    Tell us who you are, pay securely, and you&apos;ll be taken
-                    straight into the community.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={close}
-                  data-cursor-hover
-                  aria-label="Close checkout"
-                  className="group grid h-11 w-11 shrink-0 place-items-center rounded-full ring-1 ring-paper/25 transition-colors hover:bg-paper hover:text-ink"
-                >
-                  <span className="block transition-transform duration-500 ease-expo group-hover:rotate-90">
-                    ✕
-                  </span>
-                </button>
+            {/* flex-1 only from md: in the mobile scroll column a growing
+                child fights the scroll height. */}
+            <div className="order-1 flex flex-col gap-7 px-6 pb-8 pt-20 sm:px-8 md:order-2 md:flex-1 md:justify-center md:gap-8 md:p-12">
+              <div>
+                <p className="label-mono text-flare">Secure checkout</p>
+                <p className="mt-3 max-w-sm pr-14 text-lede text-paper/70 md:pr-0">
+                  Tell us who you are, pay securely, and you&apos;ll be taken
+                  straight into the community.
+                </p>
               </div>
 
               <CheckoutForm firstFieldRef={firstFieldRef} />
@@ -266,7 +284,7 @@ function CheckoutForm({
         disabled={busy}
         data-cursor-hover
         className={cn(
-          "group relative mt-2 overflow-hidden rounded-full bg-paper px-8 py-5 text-ink transition-opacity",
+          "group relative mt-2 overflow-hidden rounded-full bg-paper px-8 py-5 text-moss transition-opacity",
           busy && "opacity-60",
         )}
       >
@@ -281,7 +299,7 @@ function CheckoutForm({
         </span>
       </button>
 
-      <p className="font-mono text-2xs uppercase tracking-[0.16em] text-paper/40">
+      <p className="font-mono text-2xs uppercase tracking-[0.16em] text-paper/55">
         Card, transfer or USSD via Flutterwave. Payment details never touch this site.
       </p>
     </form>
@@ -302,7 +320,7 @@ function Field({ label, error, name, className, ref, ...props }: FieldProps) {
     <div className="group relative">
       <label
         htmlFor={id}
-        className="label-mono block text-paper/45 transition-colors group-focus-within:text-flare"
+        className="label-mono block text-paper/55 transition-colors group-focus-within:text-flare"
       >
         {label}
       </label>

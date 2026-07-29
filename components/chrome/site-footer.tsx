@@ -9,8 +9,19 @@ export function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden border-t border-paper/15 pt-20">
-      <div className="gutter grid gap-12 pb-20 sm:grid-cols-2 lg:grid-cols-12">
+    <footer className="relative overflow-hidden bg-moss pt-20">
+      {/* Bookend to the Different section: the page starts and ends on ink,
+          with moss plates carrying the weight in between. */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-linear-to-b from-ink to-transparent"
+      />
+      <span
+        aria-hidden
+        className="texture-dots fade-b pointer-events-none absolute inset-0 opacity-60 [--texture-color:var(--color-moss-lift)]"
+      />
+
+      <div className="gutter relative grid gap-12 pb-20 sm:grid-cols-2 lg:grid-cols-12">
         {/* Masthead: the logo anchors the footer's first column rather than
             floating on its own row. */}
         <div className="lg:col-span-4">
@@ -28,7 +39,7 @@ export function SiteFooter() {
         </div>
 
         <nav className="lg:col-span-3" aria-label="Sections">
-          <p className="label-mono text-paper/35">Index</p>
+          <p className="label-mono text-paper/55">Index</p>
           <ul className="mt-5 flex flex-col gap-2.5">
             {CHAPTERS.slice(1).map((chapter) => (
               <li key={chapter.id}>
@@ -48,9 +59,9 @@ export function SiteFooter() {
         </nav>
 
         <div className="lg:col-span-2">
-          <p className="label-mono text-paper/35">Founded by</p>
+          <p className="label-mono text-paper/55">Founded by</p>
           <p className="mt-5 leading-snug text-paper/70">{FOUNDER.name}</p>
-          <p className="mt-2 font-mono text-2xs uppercase leading-relaxed tracking-[0.14em] text-paper/40">
+          <p className="mt-2 font-mono text-2xs uppercase leading-relaxed tracking-[0.14em] text-paper/55">
             Creative Director
             <br />
             AI Specialist
@@ -58,11 +69,11 @@ export function SiteFooter() {
         </div>
 
         <div className="lg:col-span-3">
-          <p className="label-mono text-paper/35">Membership</p>
+          <p className="label-mono text-paper/55">Membership</p>
           <p className="display-tight mt-4 text-[clamp(1.75rem,2.8vw,2.5rem)] leading-none">
             {SITE.priceLabel}
           </p>
-          <p className="mt-2 font-mono text-2xs uppercase tracking-[0.14em] text-paper/45">
+          <p className="mt-2 font-mono text-2xs uppercase tracking-[0.14em] text-paper/55">
             Lifetime · One-time
           </p>
           <button
@@ -70,7 +81,7 @@ export function SiteFooter() {
             onClick={() => open("footer")}
             data-cursor-hover
             data-cursor-label="Join"
-            className="group relative mt-6 inline-flex overflow-hidden rounded-full bg-paper px-6 py-3 text-ink"
+            className="group relative mt-6 inline-flex overflow-hidden rounded-full bg-paper px-6 py-3 text-moss"
           >
             <span
               aria-hidden
@@ -81,15 +92,15 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="gutter flex flex-wrap items-center justify-between gap-4 border-t border-paper/15 py-6">
-        <p className="label-mono text-paper/40">
+      <div className="gutter relative flex flex-wrap items-center justify-between gap-4 border-t border-moss-lift py-6">
+        <p className="label-mono text-paper/55">
           © {year} {SITE.name}
         </p>
-        <p className="label-mono text-paper/40">Built for creatives in the AI era</p>
+        <p className="label-mono text-paper/55">Built for creatives in the AI era</p>
         <a
           href="#hero"
           data-cursor-hover
-          className="label-mono text-paper/40 transition-colors hover:text-flare"
+          className="label-mono text-paper/55 transition-colors hover:text-flare"
         >
           Back to top ↑
         </a>

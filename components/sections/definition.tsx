@@ -12,8 +12,19 @@ import { DEFINITION } from "@/lib/content";
 export function Definition() {
   const [before, after] = DEFINITION.body.split(DEFINITION.emphasis);
 
+  // No overflow-hidden on this section — it would break the sticky headword.
+  // The moss ring bleeds off the left edge and body's overflow-x contains it.
   return (
     <section id="definition" className="relative gutter py-24 sm:py-32">
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -left-[14vw] top-[18%] -z-10 hidden aspect-square w-[44vw] rounded-full border-[3.5vw] border-moss lg:block"
+      />
+      <span
+        aria-hidden
+        className="texture-dots fade-radial pointer-events-none absolute inset-y-0 right-0 -z-10 w-1/2"
+      />
+
       <SectionLabel index="01">{DEFINITION.label}</SectionLabel>
 
       <div className="mt-12 grid gap-14 lg:grid-cols-12 lg:gap-10">
@@ -27,7 +38,7 @@ export function Definition() {
                 <SplitText text="Creatives" delay={0.08} />
               </span>
             </h2>
-            <p className="mt-5 font-mono text-micro lowercase tracking-[0.1em] text-paper/45">
+            <p className="mt-5 font-mono text-micro lowercase tracking-[0.1em] text-paper/55">
               /ˈeɪ·em·biː kriːˈeɪ.tɪvz/ &nbsp;·&nbsp; noun
             </p>
             <p className="mt-2 font-editorial text-xl italic text-paper/60">
@@ -51,7 +62,7 @@ export function Definition() {
           ].map((body, i) => (
             <li
               key={i}
-              className="border-t border-paper/15 py-8 first:border-t-0 first:pt-0"
+              className="border-t border-moss-lift py-8 first:border-t-0 first:pt-0"
             >
               <Reveal delay={i * 0.08}>
                 <div className="flex gap-6">

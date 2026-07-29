@@ -32,7 +32,7 @@ export function WhatsAppHandoff({ url }: { url: string }) {
       <a
         href={url}
         data-cursor-hover
-        className="group relative inline-flex overflow-hidden rounded-full bg-flare px-8 py-4 text-ink"
+        className="group relative inline-flex overflow-hidden rounded-full bg-flare px-8 py-4 text-moss"
       >
         <span
           aria-hidden
@@ -41,7 +41,7 @@ export function WhatsAppHandoff({ url }: { url: string }) {
         <span className="relative display-tight">Open the community now</span>
       </a>
 
-      <p aria-live="polite" className="label-mono text-paper/45">
+      <p aria-live="polite" className="label-mono text-paper/55">
         {remaining > 0
           ? `Taking you there in ${remaining}s…`
           : "Opening the community…"}
