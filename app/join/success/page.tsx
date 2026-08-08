@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { WhatsAppHandoff } from "@/components/checkout/whatsapp-handoff";
-import { SITE } from "@/lib/content";
+import { SITE, SUPPORT, buildSupportUrl } from "@/lib/content";
 import {
   FlutterwaveError,
   PaymentNotSuccessfulError,
@@ -23,7 +23,6 @@ type SearchParams = {
 
 type Outcome =
   | { state: "missing" }
-  | { state: "unconfigured" }
   | {
       state: "confirmed";
       email: string;
@@ -32,7 +31,8 @@ type Outcome =
       inviteUrl: string;
     }
   | { state: "unpaid"; detail: string }
-  | { state: "error"; message: string };
+  /** Anything that leaves a possibly-paying buyer without their invite. */
+  | { state: "stranded" };
 
 async function resolveOutcome(params: SearchParams): Promise<Outcome> {
   const { status, transaction_id: transactionId } = params;
@@ -63,14 +63,15 @@ async function resolveOutcome(params: SearchParams): Promise<Outcome> {
     if (error instanceof PaymentNotSuccessfulError) {
       return { state: "unpaid", detail: error.message };
     }
-    if (error instanceof FlutterwaveError) {
-      return error.status === 503
-        ? { state: "unconfigured" }
-        : { state: "error", message: error.message };
-    }
 
-    console.error("[flutterwave] verification failed", error);
-    return { state: "error", message: "We couldn't confirm that payment." };
+    // Everything below is our problem, not the buyer's. Log the real reason
+    // for us; show them a way out, never a configuration instruction.
+    console.error(
+      "[flutterwave] could not verify",
+      { transactionId, txRef: params.tx_ref },
+      error instanceof FlutterwaveError ? error.message : error,
+    );
+    return { state: "stranded" };
   }
 }
 
@@ -79,14 +80,35 @@ export default async function JoinSuccessPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const outcome = await resolveOutcome(await searchParams);
+  const params = await searchParams;
+  const outcome = await resolveOutcome(params);
   const copy = COPY[outcome.state];
+
+  // The reference a buyer can quote us — tx_ref survives even when the
+  // verification call itself failed.
+  const reference =
+    outcome.state === "confirmed"
+      ? outcome.reference
+      : (params.tx_ref ?? params.transaction_id ?? null);
+
+  const supportUrl = buildSupportUrl(reference);
+
+  // Re-running the same URL re-runs verification, which is all a transient
+  // Flutterwave failure needs. Plain <a> so it's a full request, not a
+  // client-side no-op back to the identical route.
+  const retryUrl = `/join/success?${new URLSearchParams(
+    Object.entries(params).filter(([, v]) => Boolean(v)) as [string, string][],
+  ).toString()}`;
 
   return (
     <main className="relative flex min-h-dvh flex-col justify-center gutter py-28">
       <span
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(38rem_30rem_at_30%_35%,rgba(250,171,54,0.16),transparent_70%)]"
+      />
+      <span
+        aria-hidden
+        className="texture-dots fade-radial pointer-events-none absolute inset-0 opacity-60"
       />
 
       <div className="relative max-w-4xl">
@@ -116,33 +138,93 @@ export default async function JoinSuccessPage({
             </dl>
 
             <WhatsAppHandoff url={outcome.inviteUrl} />
+
+            <p className="mt-8 text-sm text-paper/55">
+              Didn&apos;t make it into the group?{" "}
+              <a
+                href={supportUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cursor-hover
+                className="text-flare underline underline-offset-4 transition-opacity hover:opacity-75"
+              >
+                Message us on WhatsApp
+              </a>
+              .
+            </p>
           </>
         ) : (
           <>
-            {outcome.state === "unpaid" ? (
-              <p className="mt-5 label-mono text-paper/55">{outcome.detail}</p>
+            {reference ? (
+              <div className="mt-9 inline-flex flex-col gap-1 rounded-xl border border-moss-lift bg-moss px-5 py-4">
+                <span className="label-mono text-paper/55">
+                  Your reference — quote this
+                </span>
+                <span className="font-mono text-sm text-paper">{reference}</span>
+              </div>
             ) : null}
 
-            {outcome.state === "error" ? (
-              <p className="mt-5 label-mono text-flare">{outcome.message}</p>
-            ) : null}
+            <div className="mt-12 flex flex-wrap items-center gap-4">
+              {outcome.state === "stranded" ? (
+                <>
+                  <a
+                    href={supportUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-cursor-hover
+                    className="group relative inline-flex overflow-hidden rounded-full bg-flare px-8 py-4 text-moss"
+                  >
+                    <span
+                      aria-hidden
+                      className="absolute inset-0 origin-bottom scale-y-0 bg-paper transition-transform duration-600 ease-expo group-hover:scale-y-100 group-focus-visible:scale-y-100"
+                    />
+                    <span className="relative display-tight">
+                      Message us on WhatsApp
+                    </span>
+                  </a>
 
-            <div className="mt-14 flex flex-wrap items-center gap-4">
-              <Link
-                href="/"
-                data-cursor-hover
-                className="group relative inline-flex overflow-hidden rounded-full bg-flare px-8 py-4 text-moss"
-              >
-                <span
-                  aria-hidden
-                  className="absolute inset-0 origin-bottom scale-y-0 bg-paper transition-transform duration-600 ease-expo group-hover:scale-y-100 group-focus-visible:scale-y-100"
-                />
-                <span className="relative display-tight">Back to the site</span>
-              </Link>
-              <span className="label-mono text-paper/55">
-                {SITE.name} · Lifetime Membership
-              </span>
+                  <a
+                    href={retryUrl}
+                    data-cursor-hover
+                    className="inline-flex rounded-full px-8 py-4 ring-1 ring-inset ring-moss-lift transition-colors hover:bg-moss"
+                  >
+                    <span className="display-tight">Try again</span>
+                  </a>
+                </>
+              ) : (
+                <Link
+                  href="/"
+                  data-cursor-hover
+                  className="group relative inline-flex overflow-hidden rounded-full bg-flare px-8 py-4 text-moss"
+                >
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 origin-bottom scale-y-0 bg-paper transition-transform duration-600 ease-expo group-hover:scale-y-100 group-focus-visible:scale-y-100"
+                  />
+                  <span className="relative display-tight">Back to the site</span>
+                </Link>
+              )}
             </div>
+
+            {outcome.state === "unpaid" ? (
+              <p className="mt-8 text-sm text-paper/55">
+                Charged anyway?{" "}
+                <a
+                  href={supportUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-cursor-hover
+                  className="text-flare underline underline-offset-4 transition-opacity hover:opacity-75"
+                >
+                  Message us on {SUPPORT.whatsappDisplay}
+                </a>{" "}
+                and we&apos;ll sort it.
+              </p>
+            ) : null}
+
+            <p className="mt-10 label-mono text-paper/55">
+              {SITE.name} · Lifetime Membership
+            </p>
           </>
         )}
       </div>
@@ -166,14 +248,9 @@ const COPY: Record<Outcome["state"], { kicker: string; headline: string; body: s
     headline: "No transaction here.",
     body: "This page confirms a completed payment. Head back to the site and start checkout to join the community.",
   },
-  unconfigured: {
-    kicker: "Setup required",
-    headline: "Payments aren't fully switched on.",
-    body: "Checkout ran, but the server can't verify it yet. Add FLW_SECRET_KEY to the environment to confirm payments and release the community invite.",
-  },
-  error: {
-    kicker: "Verification failed",
-    headline: "We couldn't confirm that yet.",
-    body: "If money left your account, it's safe — Flutterwave has the record. Send us your reference and we'll get you in straight away.",
+  stranded: {
+    kicker: "Hold tight",
+    headline: "We're still confirming your payment.",
+    body: "If you've been charged, your membership is safe — we have the record on our side. Message us on WhatsApp with the reference below and we'll get you into the community straight away. You can also try again.",
   },
 };

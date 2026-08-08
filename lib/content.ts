@@ -7,11 +7,31 @@
 export const SITE = {
   name: "AMB Creatives",
   tagline: "The Private Creative Learning Ecosystem Built for the AI Era",
-  url: "https://ambcreatives.com",
+  url: "https://www.ambcreatives.com.ng",
   price: 5000,
   priceLabel: "₦5,000",
   currency: "NGN",
 } as const;
+
+/** Where a buyer goes when the automated flow lets them down. */
+export const SUPPORT = {
+  whatsappDisplay: "+234 809 912 9017",
+  /** E.164 without the leading + — the form wa.me expects. */
+  whatsappE164: "2348099129017",
+} as const;
+
+/**
+ * A wa.me link that opens with the problem already typed out, including the
+ * payment reference. Someone who has just paid and been left stranded should
+ * not also have to explain themselves.
+ */
+export function buildSupportUrl(reference?: string | null) {
+  const message = reference
+    ? `Hi AMB Creatives — I paid for the Lifetime Membership but didn't get the community link. My payment reference is ${reference}.`
+    : `Hi AMB Creatives — I paid for the Lifetime Membership but didn't get the community link.`;
+
+  return `https://wa.me/${SUPPORT.whatsappE164}?text=${encodeURIComponent(message)}`;
+}
 
 export const HERO = {
   headline: ["Join the Private", "Creative Learning", "Ecosystem Built", "for the AI Era"],

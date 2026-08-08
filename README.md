@@ -143,12 +143,56 @@ cp .env.example .env.local
 | `COMMUNITY_INVITE_URL` | no | Overrides the WhatsApp invite so it can be rotated without a deploy. |
 | `NEXT_PUBLIC_SITE_URL` | no | Absolute origin for Open Graph / canonical URLs. |
 
-Register `https://your-domain.com/api/flutterwave/webhook` in the Flutterwave
-dashboard under **Settings → Webhooks**.
+Register the webhook under **Settings → Webhooks**, using the **canonical
+host**:
 
-Persist members and send invites from the `charge.completed` branch of
+```
+https://www.ambcreatives.com.ng/api/flutterwave/webhook
+```
+
+> ⚠️ **Use the exact host the site serves from.** The apex `ambcreatives.com.ng`
+> 308-redirects to `www`, and webhook senders do not follow redirects — they
+> record the 3xx as a failed delivery. This has already bitten us once: every
+> delivery failed while the endpoint itself was perfectly healthy. If
+> Flutterwave reports delivery trouble, check the registered URL for a redirect
+> before touching any code:
+>
+> ```bash
+> curl -s -o /dev/null -w '%{http_code}\n' -X POST <registered-url> -d '{}'
+> # 401 = reachable, rejecting an unsigned request (healthy)
+> # 3xx = wrong host — this is the bug
+> # 503 = FLW_SECRET_HASH missing from the deployed environment
+> ```
+
+The webhook re-verifies every `charge.completed` against Flutterwave rather than
+trusting the payload — the `verif-hash` header is a shared secret, not a
+signature over the body, so the payload's own claim of success proves nothing.
+It always returns 200 once authenticated, including when verification fails, so
+Flutterwave never retries a delivery that was itself fine; failures are logged
+instead.
+
+Persist members and send invites from the fulfilment block in
 [app/api/flutterwave/webhook/route.ts](app/api/flutterwave/webhook/route.ts) —
 the redirect is what the buyer sees, the webhook is what you reconcile against.
+
+### When the buyer-facing flow fails
+
+The redirect and the webhook are independent. A webhook failure never affects a
+buyer's redirect, and fixing one does not fix the other.
+
+If verification fails on `/join/success`, the buyer is never shown a dead end or
+an internal message. They get the `stranded` state: their payment reference, a
+**Try again** link that re-runs verification, and a WhatsApp button to
+`SUPPORT.whatsappDisplay` pre-filled with the problem and the reference. The
+real cause is logged server-side for us, never rendered to them.
+
+Because the reference is always in that pre-filled message, you can paste it
+straight into the Flutterwave dashboard to confirm a payment before releasing
+the invite by hand. The state deliberately errs toward "you may have paid" — a
+stranded customer must never be turned away, so someone who merely poked the URL
+will see it too.
+
+Support contact lives in `SUPPORT` in [lib/content.ts](lib/content.ts).
 
 The price lives in `SITE.price` in [lib/content.ts](lib/content.ts). Flutterwave
 charges in the major unit, so ₦5,000 is sent as `5000`.
